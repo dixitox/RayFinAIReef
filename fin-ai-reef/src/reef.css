@@ -1,0 +1,514 @@
+/* ==========================================================================
+   Finn's AI Reef — ocean theme
+   Ported from the prototype (finns-ai-reef-prototype.html) and adapted for
+   the React app. Scoped under .reef-app so it never fights the Tailwind
+   tokens used elsewhere in the template.
+   Accessibility: colour-blind-safe palette, >=44px touch targets, focus rings,
+   respects prefers-reduced-motion.
+   ========================================================================== */
+
+.reef-app {
+  --deep: #06283d;
+  --sea1: #0a4d8c;
+  --sea2: #06283d;
+  --teal: #2ec4b6;
+  --teal2: #3dd5c6;
+  --sky: #47b5ff;
+  --coral: #ff6b6b;
+  --sun: #ffd166;
+  --good: #06d6a0;
+  --bad: #ef476f;
+  --card: #ffffff;
+  --ink: #06283d;
+  --muted: #4a6572;
+  --ring: #ffd166;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  --radius: 22px;
+  --reef-font: "Trebuchet MS", "Segoe UI Rounded", "Verdana", system-ui, sans-serif;
+
+  font-family: var(--reef-font);
+  color: var(--ink);
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(71, 181, 255, 0.35), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(46, 196, 182, 0.30), transparent 55%),
+    linear-gradient(180deg, var(--sea1) 0%, var(--sea2) 100%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  .reef-app {
+    --card: #0e3550;
+    --ink: #eaf6ff;
+    --muted: #a9c6d8;
+  }
+}
+
+.reef-app *,
+.reef-app *::before,
+.reef-app *::after {
+  box-sizing: border-box;
+}
+
+/* Visible keyboard focus everywhere */
+.reef-app :focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* floating bubbles */
+.reef-bubbles {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.reef-bubbles span {
+  position: absolute;
+  bottom: -40px;
+  display: block;
+  width: 18px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 50%;
+  animation: reef-rise linear infinite;
+}
+.reef-bubbles span:nth-child(1) { left: 8%;  width: 14px; height: 14px; animation-duration: 11s; }
+.reef-bubbles span:nth-child(2) { left: 22%; width: 24px; height: 24px; animation-duration: 15s; animation-delay: 2s; }
+.reef-bubbles span:nth-child(3) { left: 40%; width: 10px; height: 10px; animation-duration: 9s;  animation-delay: 1s; }
+.reef-bubbles span:nth-child(4) { left: 57%; width: 28px; height: 28px; animation-duration: 17s; animation-delay: 4s; }
+.reef-bubbles span:nth-child(5) { left: 72%; width: 16px; height: 16px; animation-duration: 12s; animation-delay: 1.5s; }
+.reef-bubbles span:nth-child(6) { left: 86%; width: 20px; height: 20px; animation-duration: 14s; animation-delay: 3s; }
+@keyframes reef-rise {
+  0%   { transform: translateY(0) scale(0.6); opacity: 0; }
+  15%  { opacity: 0.9; }
+  100% { transform: translateY(-110vh) scale(1.1); opacity: 0; }
+}
+
+.reef-wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px 16px 60px;
+}
+
+/* top bar */
+.reef-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  padding: 10px 14px;
+  color: #eaf6ff;
+  margin-bottom: 18px;
+}
+.reef-topbar .brand {
+  font-weight: bold;
+  font-size: 1.15rem;
+  letter-spacing: 0.3px;
+  background: none;
+  border: none;
+  color: inherit;
+  font-family: var(--reef-font);
+  cursor: pointer;
+  padding: 4px;
+}
+.reef-topbar .spacer { flex: 1; }
+.reef-badgetray { font-size: 1.35rem; min-width: 40px; text-align: right; }
+.reef-badgetray .hint { font-size: 0.8rem; color: #cfe6f7; }
+.reef-homebtn {
+  background: var(--sun);
+  color: var(--ink);
+  border: none;
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-weight: bold;
+  font-family: var(--reef-font);
+  cursor: pointer;
+  font-size: 0.95rem;
+  min-height: 44px;
+}
+.reef-homebtn:hover { filter: brightness(1.05); }
+
+.reef-signinbtn {
+  background: var(--sky);
+  color: #04263b;
+  border: none;
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-weight: bold;
+  font-family: var(--reef-font);
+  cursor: pointer;
+  font-size: 0.9rem;
+  min-height: 44px;
+}
+.reef-signinbtn:hover { filter: brightness(1.05); }
+.reef-signinbtn:disabled { opacity: 0.6; cursor: default; }
+
+/* screens */
+.reef-screen { animation: reef-fade 0.35s ease; }
+@keyframes reef-fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Finn + speech bubble */
+.reef-finnrow {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  margin: 6px 0 18px;
+}
+.reef-finn {
+  flex: 0 0 auto;
+  width: 120px;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.3));
+}
+.reef-finn.small { width: 84px; }
+.reef-bubble {
+  position: relative;
+  background: var(--card);
+  color: var(--ink);
+  border-radius: 20px;
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
+  max-width: 640px;
+  font-size: 1.1rem;
+  line-height: 1.45;
+  flex: 1;
+}
+.reef-bubble::after {
+  content: "";
+  position: absolute;
+  left: -12px;
+  bottom: 20px;
+  border: 12px solid transparent;
+  border-right-color: var(--card);
+  border-left: 0;
+}
+.reef-speak-btn {
+  margin-top: 10px;
+  background: var(--sky);
+  color: #04263b;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: var(--reef-font);
+  font-size: 0.9rem;
+  min-height: 44px;
+}
+.reef-speak-btn:hover { filter: brightness(1.06); }
+.reef-speak-btn[aria-pressed="true"] { background: var(--teal2); }
+
+.reef-title {
+  color: #fff;
+  text-align: center;
+  margin: 6px 0 2px;
+  font-size: 2.3rem;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+}
+.reef-subtitle {
+  color: #dff1ff;
+  text-align: center;
+  margin: 0 0 14px;
+  font-size: 1.05rem;
+}
+
+/* zone grid */
+.reef-zones {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+.reef-zone {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 3px solid transparent;
+}
+.reef-zone .emoji { font-size: 2.4rem; }
+.reef-zone h3 { margin: 0; font-size: 1.2rem; }
+.reef-zone p { margin: 0; color: var(--muted); font-size: 0.98rem; flex: 1; }
+.reef-zone .play {
+  background: var(--good);
+  color: #03271c;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: var(--reef-font);
+  min-height: 44px;
+}
+.reef-zone .play:hover { filter: brightness(1.05); }
+.reef-zone .soon {
+  background: #e6eef2;
+  color: #6b8394;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: not-allowed;
+  font-family: var(--reef-font);
+  min-height: 44px;
+}
+.reef-zone.playable { border-color: var(--sun); }
+.reef-tag {
+  align-self: flex-start;
+  font-size: 0.72rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+.reef-tag.go { background: #dffdf3; color: #06805e; }
+.reef-tag.wait { background: #eef3f6; color: #7d94a3; }
+
+/* game panels */
+.reef-panel {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin-top: 6px;
+}
+.reef-zonehdr {
+  color: #fff;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 2px 0 8px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+.reef-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  margin: 14px 0;
+}
+.reef-item {
+  width: 120px;
+  background: #f4fbff;
+  border-radius: 18px;
+  padding: 12px 8px;
+  text-align: center;
+  border: 3px solid #dcecf5;
+  transition: transform 0.15s, border-color 0.2s, background 0.2s;
+}
+@media (prefers-color-scheme: dark) {
+  .reef-item { background: #0b2c44; border-color: #17415f; }
+}
+.reef-item .big { font-size: 3rem; line-height: 1.1; }
+.reef-item .cap { font-size: 0.9rem; color: var(--muted); margin-top: 4px; }
+.reef-item.taught { border-color: var(--good); background: #e8fff7; transform: translateY(-4px); }
+@media (prefers-color-scheme: dark) {
+  .reef-item.taught { background: #083b2c; }
+}
+.reef-item .tap {
+  margin-top: 8px;
+  background: var(--sky);
+  color: #04263b;
+  border: none;
+  border-radius: 12px;
+  padding: 9px 10px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: var(--reef-font);
+  font-size: 0.85rem;
+  width: 100%;
+  min-height: 44px;
+}
+.reef-item .tap:disabled { opacity: 0.7; cursor: default; }
+.reef-item .verdict { margin-top: 8px; font-weight: bold; font-size: 0.9rem; min-height: 20px; }
+.reef-v-ok { color: var(--good); }
+.reef-v-no { color: var(--bad); }
+
+.reef-btn {
+  background: var(--coral);
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  padding: 13px 22px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: var(--reef-font);
+  box-shadow: var(--shadow);
+  min-height: 44px;
+}
+.reef-btn:hover { filter: brightness(1.06); }
+.reef-btn:disabled { opacity: 0.45; cursor: not-allowed; filter: none; }
+.reef-btn.go { background: var(--good); color: #03271c; }
+.reef-btn.blue { background: var(--sky); color: #04263b; }
+.reef-center { text-align: center; margin-top: 14px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.reef-progress { text-align: center; color: var(--muted); font-weight: bold; margin-top: 6px; }
+
+.reef-lesson {
+  background: #fff7e6;
+  border-left: 6px solid var(--sun);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin: 14px 0;
+  color: #5b4a1e;
+  font-size: 1.02rem;
+  line-height: 1.5;
+}
+@media (prefers-color-scheme: dark) {
+  .reef-lesson { background: #3a3410; color: #ffe9b3; }
+}
+.reef-lesson b { color: var(--coral); }
+
+/* real-or-ai */
+.reef-rcard {
+  background: #eef7ff;
+  border-radius: 20px;
+  padding: 26px 18px;
+  text-align: center;
+  margin: 10px auto;
+  max-width: 480px;
+}
+@media (prefers-color-scheme: dark) {
+  .reef-rcard { background: #0b2c44; }
+}
+.reef-rcard .rbig { font-size: 4.6rem; line-height: 1; }
+.reef-rcard .rcap { font-size: 1.12rem; margin-top: 10px; color: var(--ink); }
+.reef-choices {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.reef-choice {
+  flex: 1;
+  min-width: 150px;
+  max-width: 220px;
+  border: none;
+  border-radius: 18px;
+  padding: 16px;
+  font-size: 1.15rem;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: var(--reef-font);
+  box-shadow: var(--shadow);
+  min-height: 44px;
+}
+.reef-choice.real { background: #dff3ff; color: #075985; }
+.reef-choice.ai { background: #ffe6ef; color: #9d174d; }
+.reef-choice:hover { filter: brightness(1.03); }
+.reef-choice:disabled { cursor: default; opacity: 0.9; }
+
+.reef-feedback {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  font-size: 1.05rem;
+}
+.reef-feedback.right { background: #e8fff7; border-left: 6px solid var(--good); color: #06603f; }
+.reef-feedback.wrong { background: #ffecf1; border-left: 6px solid var(--bad); color: #8a1538; }
+@media (prefers-color-scheme: dark) {
+  .reef-feedback.right { background: #083b2c; color: #8affd6; }
+  .reef-feedback.wrong { background: #3d0f1e; color: #ffb3c7; }
+}
+
+.reef-win { text-align: center; }
+.reef-win .medal { font-size: 4rem; }
+.reef-win h2 { color: #fff; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); margin: 6px 0; }
+
+.reef-safefoot {
+  margin-top: 26px;
+  text-align: center;
+  color: #cfe9fb;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  padding: 10px;
+}
+.reef-safefoot b { color: #fff; }
+.reef-note { text-align: center; color: #bcd9ee; font-size: 0.8rem; margin-top: 10px; }
+
+.reef-loading {
+  color: #eaf6ff;
+  text-align: center;
+  padding: 40px 16px;
+  font-size: 1.1rem;
+}
+
+/* Phase 2 avatar picker */
+.reef-avatar-panel { margin-bottom: 16px; }
+.reef-avatar-hint { margin-top: 0; }
+.reef-avatar-btn { width: 72px; font-size: 2rem; }
+
+/* Bright Reef — superpower reveal cards */
+.reef-power {
+  width: 150px;
+  cursor: pointer;
+  font-family: var(--reef-font);
+  color: var(--ink);
+}
+.reef-power .big { font-size: 2.6rem; }
+.reef-power-tip {
+  margin-top: 6px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+/* Safe Harbour — AI Promise picker */
+.reef-promise {
+  width: 200px;
+  cursor: pointer;
+  font-family: var(--reef-font);
+  color: var(--ink);
+  text-align: left;
+}
+.reef-promise .big { font-size: 2rem; text-align: center; }
+.reef-promise .cap { font-size: 0.95rem; color: var(--ink); }
+.reef-promise-pick {
+  margin-top: 8px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  color: var(--good);
+  text-align: center;
+}
+.reef-promise-scroll { text-align: left; }
+.reef-promise-scroll ul { margin: 10px 0 0; padding-left: 4px; list-style: none; }
+.reef-promise-scroll li { margin: 8px 0; font-size: 1.02rem; line-height: 1.4; }
+
+/* status banner (offline seed / signed in) */
+.reef-status {
+  text-align: center;
+  color: #cfe9fb;
+  font-size: 0.8rem;
+  margin: -6px 0 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reef-app *,
+  .reef-app *::before,
+  .reef-app *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
