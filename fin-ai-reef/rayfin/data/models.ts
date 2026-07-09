@@ -8,9 +8,9 @@
 //
 // SAFEGUARDING (encoded here, do not weaken):
 //  - Only educators authenticate (Fabric SSO). Children never sign in.
-//  - Content (Zone/Question/Badge) is readable by any authenticated user.
-//    In this MVP every authenticated user is treated as an educator; a
-//    dedicated teacher/admin role split can be layered on later.
+//  - Content (Zone/Question/Badge) is readable by any authenticated user, and
+//    writable only by the teacher/admin role (wire the role claim from Entra
+//    app roles / security groups).
 //  - Owner-scoped entities (Classroom/PupilSession/AttemptEvent) use a
 //    row-level `check` so an educator can only touch their OWN records.
 //  - No child PII: pupils are pseudonymous (emoji avatar + auto nickname).
@@ -20,7 +20,6 @@
 import {
     entity,
     role,
-    authenticated,
     uuid,
     text,
     int,
@@ -32,7 +31,10 @@ import {
 
 /** A reef zone (topic) shown on the Reef Map. Read-only content. */
 @entity()
-@authenticated("*")
+@role("authenticated", "read")
+@role("authenticated", ["create", "update", "delete"], {
+    policy: (claims) => claims.role.eq("teacher").or(claims.role.eq("admin")),
+})
 export class Zone {
     @uuid()
     id!: string;
@@ -58,7 +60,10 @@ export class Zone {
 
 /** Game content — Real-or-AI rounds + Teach-Finn items + Finn's tips. */
 @entity()
-@authenticated("*")
+@role("authenticated", "read")
+@role("authenticated", ["create", "update", "delete"], {
+    policy: (claims) => claims.role.eq("teacher").or(claims.role.eq("admin")),
+})
 export class Question {
     @uuid()
     id!: string;
@@ -115,7 +120,10 @@ export class Question {
 
 /** An earnable badge, tied to a zone. Read-only content. */
 @entity()
-@authenticated("*")
+@role("authenticated", "read")
+@role("authenticated", ["create", "update", "delete"], {
+    policy: (claims) => claims.role.eq("teacher").or(claims.role.eq("admin")),
+})
 export class Badge {
     @uuid()
     id!: string;

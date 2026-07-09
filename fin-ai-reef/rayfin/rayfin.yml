@@ -6,6 +6,16 @@ services:
     enabled: true
     fabric:
       enabled: true
+    # App-role -> role-claim mapping.
+    # Only educators ever authenticate (children never sign in), so every
+    # authenticated Rayfin session is an educator: grant the `teacher` role so
+    # they can write content (Zone/Question/Badge) per the models.ts policy
+    # `claims.role.eq("teacher").or(claims.role.eq("admin"))`.
+    # NOTE: customClaims is static (same for all users). To distinguish admins
+    # per-user, assign Entra app roles and have them flow into the `role` claim
+    # (see the Entra app-role setup steps).
+    customClaims:
+      role: teacher
     allowedRedirectUris:
       - http://localhost:5173
       - https://easy-horn-9c000b3199-swedencentral.webapp.fabricapps.net
