@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { loadReefContent, questionsFor, type LoadedContent } from "@/lib/reef-content";
 import { useClassMode } from "@/hooks/use-class-mode";
 import { ReefMap } from "@/screens/reef-map";
+import { Story } from "@/screens/story";
 import { TeachFinn } from "@/screens/teach-finn";
 import { RealOrAi } from "@/screens/real-or-ai";
 import { SmartOrNot } from "@/screens/smart-or-not";
@@ -16,13 +17,33 @@ import { Superpowers } from "@/screens/superpowers";
 import { SafeHarbour } from "@/screens/safe-harbour";
 import { ComingSoon } from "@/screens/coming-soon";
 
-type ScreenId = "home" | "teach" | "real" | "smart" | "superpowers" | "safe" | "coming";
+type ScreenId = "home" | "story" | "teach" | "real" | "smart" | "superpowers" | "safe" | "coming";
 
 const PUPIL_AVATARS = ["🐠", "🐢", "🐬", "🦀", "🐙", "🦈", "🐡", "⭐", "🐚", "🦑"];
 
+// Show the "What is AI?" story automatically the first time a child visits
+// (replayable any time from the Reef Map). No PII — just a local "seen" flag.
+const STORY_SEEN_KEY = "finn-seen-story";
+
+function hasSeenStory(): boolean {
+    try {
+        return localStorage.getItem(STORY_SEEN_KEY) === "1";
+    } catch {
+        return false;
+    }
+}
+
+function markStorySeen(): void {
+    try {
+        localStorage.setItem(STORY_SEEN_KEY, "1");
+    } catch {
+        /* ignore (private mode / storage disabled) */
+    }
+}
+
 function App() {
     const [content, setContent] = useState<LoadedContent | null>(null);
-    const [screen, setScreen] = useState<ScreenId>("home");
+    const [screen, setScreen] = useState<ScreenId>(() => (hasSeenStory() ? "home" : "story"));
     const [earned, setEarned] = useState<Set<string>>(new Set());
 
     const cls = useClassMode();
@@ -45,6 +66,15 @@ function App() {
     }
 
     function goHome() {
+        setScreen("home");
+    }
+
+    function openStory() {
+        setScreen("story");
+    }
+
+    function finishStory() {
+        markStorySeen();
         setScreen("home");
     }
 
@@ -134,7 +164,10 @@ function App() {
                         {!content.fromBackend && (
                             <p className="reef-status">Playing with built-in reef content (offline mode).</p>
                         )}
-                        {screen === "home" && <ReefMap zones={zones} onPlay={openZone} />}
+                        {screen === "home" && <ReefMap zones={zones} onPlay={openZone} onStory={openStory} />}
+                        {screen === "story" && (
+                            <Story onStart={finishStory} onHome={finishStory} />
+                        )}
                         {screen === "teach" && (
                             <TeachFinn
                                 questions={questionsFor(content, "training-cove", "teach-finn")}

@@ -503,6 +503,70 @@
   margin: -6px 0 12px;
 }
 
+/* "Start here" story call-to-action on the Reef Map */
+.reef-storycta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin: 14px 0 4px;
+  padding: 16px 18px;
+  border: 3px solid var(--sun);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, #fff7e0 0%, #ffffff 100%);
+  color: #06283d; /* card is always light — pin dark text (don't inherit --ink) */
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--reef-font);
+  box-shadow: var(--shadow);
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+.reef-storycta:hover { transform: translateY(-2px); filter: brightness(1.02); }
+.reef-storycta-emoji { font-size: 2.4rem; line-height: 1; }
+.reef-storycta-text { display: flex; flex-direction: column; gap: 2px; }
+.reef-storycta-text b { font-size: 1.08rem; color: #06283d; }
+.reef-storycta-text span { font-size: 0.9rem; color: #4a6572; }
+.reef-storycta-go { margin-left: auto; font-size: 1.6rem; color: #06805e; }
+
+/* Finn's Story — "What is AI?" intro */
+.reef-story-emoji {
+  font-size: 3.4rem;
+  text-align: center;
+  margin: 4px 0 8px;
+}
+.reef-story-count {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin: 12px 0 0;
+}
+.reef-story-dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 6px 0 4px;
+}
+.reef-story-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  background: #d6e4ec;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.reef-story-dot.on { background: var(--teal); transform: scale(1.25); }
+.reef-skip {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: var(--reef-font);
+  font-size: 0.9rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 6px 10px;
+}
+.reef-skip:hover { color: var(--ink); }
+
 @media (prefers-reduced-motion: reduce) {
   .reef-app *,
   .reef-app *::before,

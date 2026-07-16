@@ -21,9 +21,11 @@ interface ReefMapProps {
     zones: Zone[];
     /** Map a playable zone key to the screen it opens. */
     onPlay: (zoneKey: string) => void;
+    /** Open Finn's "What is AI?" story intro. */
+    onStory: () => void;
 }
 
-export function ReefMap({ zones, onPlay }: ReefMapProps) {
+export function ReefMap({ zones, onPlay, onStory }: ReefMapProps) {
     return (
         <section className="reef-screen" aria-labelledby="reef-home-title">
             <h1 className="reef-title" id="reef-home-title">Finn's AI Reef</h1>
@@ -35,6 +37,15 @@ export function ReefMap({ zones, onPlay }: ReefMapProps) {
                 Hi! I'm <b>Finn</b> the manta ray. 🌊 Let's explore what AI is, where it
                 helps us, and where it can get things wrong. Pick a reef zone to start!
             </FinnRow>
+
+            <button type="button" className="reef-storycta" onClick={onStory}>
+                <span className="reef-storycta-emoji" aria-hidden="true">📖</span>
+                <span className="reef-storycta-text">
+                    <b>New here? Start with Finn's story</b>
+                    <span>What is AI? — a 1-minute tale before you play</span>
+                </span>
+                <span className="reef-storycta-go" aria-hidden="true">▶</span>
+            </button>
 
             <div className="reef-zones">
                 {zones.map((zone) => (

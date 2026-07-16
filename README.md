@@ -56,7 +56,12 @@ Meanwhile, most "kids + data" apps create a safeguarding headache: they collect 
 
 ## The experience — five reef zones
 
-Each zone is a short, tap‑based mini‑game. Finn introduces it, reads everything aloud (“🔊 Read to me”), and gives friendly feedback. Completing a zone earns a **badge** 🐚.
+Each zone is a short, tap‑based mini‑game. Finn introduces it, reads everything aloud in a soft, soothing voice (“🔊 Read to me”), and gives friendly feedback. Completing a zone earns a **badge** 🐚.
+
+### 📖 First: Finn's Story — *What is AI?*
+New visitors are welcomed with a short, narrated story that explains AI in child‑friendly language — *it's a clever computer brain, it learns from examples, it can be helpful, and it can be wrong or used to trick us* — before they play. It auto‑plays once and is always replayable from the “Start here” card on the Reef Map.
+
+![Finn's Story — What is AI?](docs/screenshots/07-story-intro.png)
 
 ### 🌊 Splash Zone — *What is AI?*
 Sort the **smart machines** (that learn and decide) from **ordinary things** (that do one fixed job). Builds the core concept: not every gadget is “AI”.
@@ -129,7 +134,7 @@ Then open **http://localhost:5173**. The app ships with a bundled content seed, 
 - **Front end:** React 19 + Vite + TypeScript, custom ocean theme (no heavy UI kit).
 - **Auth:** `@microsoft/rayfin-auth-provider-fabric` — Fabric SSO for **educators only**.
 - **Data:** Rayfin data service (MSSQL dialect) with entities declared via decorators.
-- **Accessibility:** read‑aloud via the Web Speech API, ≥44px tap targets, focus rings, `prefers-reduced-motion` support.
+- **Accessibility:** soothing read‑aloud narration — an **Azure AI Speech** neural voice (human) when configured, gracefully falling back to the most natural browser voice — plus ≥44px tap targets, focus rings, and `prefers-reduced-motion` support.
 - **Offline‑first content:** a bundled seed means the app is always playable; it only queries the live tables when an educator is authenticated.
 
 ### Review the code — repo map
@@ -143,6 +148,7 @@ RayFinAIReef/
    │  ├─ App.tsx                  ← screen router + top bar + badges
    │  ├─ screens/                 ← one file per zone (the games)
    │  │  ├─ reef-map.tsx          ·  home / zone picker
+   │  │  ├─ story.tsx             ·  📖 "What is AI?" narrated intro
    │  │  ├─ smart-or-not.tsx      ·  🌊 Splash Zone
    │  │  ├─ teach-finn.tsx        ·  🐚 Training Cove
    │  │  ├─ superpowers.tsx       ·  ✨ Bright Reef
@@ -151,11 +157,14 @@ RayFinAIReef/
    │  ├─ components/finn.tsx       ← Finn mascot + speech bubble
    │  ├─ hooks/use-class-mode.tsx  ← educator sign‑in + pupil session
    │  ├─ lib/reef-content.ts       ← content loader (bundled seed ↔ live tables)
+   │  ├─ lib/speak.ts              ← "Read to me" (Azure neural ↔ browser voice)
+   │  ├─ lib/azure-speech.ts       ← Azure AI Speech neural TTS (optional)
    │  ├─ data/reef-content.ts      ← bundled seed content (zones, questions, badges)
    │  └─ reef.css                  ← ocean theme
    ├─ rayfin/
    │  ├─ data/models.ts            ← data model + safeguarding role policies
    │  └─ rayfin.yml                ← auth, data & hosting config
+   ├─ .env.example                 ← optional Azure Speech config (copy to *.local)
    └─ seed/reef-content.seed.json  ← seed for the deployed database
 ```
 
@@ -164,6 +173,17 @@ Fast paths for reviewers:
 - **See the safeguarding rules:** [fin-ai-reef/rayfin/data/models.ts](fin-ai-reef/rayfin/data/models.ts)
 - **See a game:** [fin-ai-reef/src/screens/teach-finn.tsx](fin-ai-reef/src/screens/teach-finn.tsx)
 - **See the content model:** [fin-ai-reef/src/data/reef-content.ts](fin-ai-reef/src/data/reef-content.ts)
+
+### Voice (optional Azure AI Speech)
+
+By default Finn narrates with the best available **browser** voice, so the app needs no setup. For a genuinely human, soothing voice, add an **Azure AI Speech** resource:
+
+1. Copy [fin-ai-reef/.env.example](fin-ai-reef/.env.example) to `fin-ai-reef/.env.development.local` (dev) and/or `.env.production.local` (build).
+2. Set `VITE_AZURE_SPEECH_KEY`, `VITE_AZURE_SPEECH_REGION`, and optionally `VITE_AZURE_SPEECH_VOICE` (default `en-GB-SoniaNeural`).
+
+Those `*.local` files are git‑ignored (no secrets are committed) and are not overwritten by `rayfin env`. If unset, the app silently falls back to browser voices. See [fin-ai-reef/src/lib/azure-speech.ts](fin-ai-reef/src/lib/azure-speech.ts).
+
+> Note: a client‑side key is fine for a demo but is exposed in the browser bundle — use a short‑lived‑token endpoint (`fromAuthorizationToken`) for production.
 
 ### The data model, in one glance
 
